@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PhotoGaffe</string>
+    <string name="new_picture">New Picture</string>
+    <string name="reshuffle">Reshuffle</string>
+    <string name="show_numbers">Show Tile Numbers</string>
+    <string name="hide_numbers">Hide Tile Numbers</string>
+    <string name="picasa_error">Images from Picasa web albums are not supported for this version of Android.</string>
+    <string name="grid_size_dialog_title">Select Grid Size</string>
+    <string name="settings_dialog_title">Settings</string>
+    <string name="congratulations">Congratulations!</string>
+</resources>
