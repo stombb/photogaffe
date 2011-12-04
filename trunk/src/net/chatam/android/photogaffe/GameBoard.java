@@ -182,6 +182,11 @@ public final class GameBoard {
 	public void shuffleTiles() {
 		do {
 			Collections.shuffle(tiles);
+			
+			// Place the blank tile at the end
+			tiles.remove(theBlankTile);
+			tiles.add(theBlankTile);
+			
 			for (short row = 0; row < gridSize; row++) {
 				for (short column = 0; column < gridSize; column++) {
 					tileViews.get(row * gridSize + column).setCurrentTile(
@@ -221,8 +226,8 @@ public final class GameBoard {
 	/* (non-Javadoc)
 	 * Determines if the current tile arrangement is solvable.  This is
 	 * mathematically provable by determining the number of incorrectly ordered
-	 * tiles (permutations).  If the number of permutations plus the row number
-	 * of the blank tile is even, then the puzzle is solvable.
+	 * tiles (permutations).  If the number of permutations plus taxicab
+	 * distance of the blank tile is even, then the puzzle is solvable.
 	 * Pseudo-code for algorithm:
 	 *   Start with the first tile on the board (top-left)
 	 *   Determine its correct location
@@ -233,23 +238,22 @@ public final class GameBoard {
 	 *   If out-of-order count + row number of blank is even, it is solvable
 	 * To better understand the code, it is easier to quickly read the comments
 	 * below completely, then go back and read the code. 
+	 * For game consistency, the last tile (bottom-right) is always the blank.
+	 * Putting the blank tile at its correct location reduces its taxicab 
+	 * distance to 0, so its row number can be ignored.
 	 * 
 	 * http://mathworld.wolfram.com/15Puzzle.html
+	 * http://en.wikipedia.org/wiki/Fifteen_puzzle
 	 */
 	private boolean isSolvable() {
-		int permutations = 0; // the number of incorrect orderings of tiles
-		int tileIndex = 0; // the current tile's location in the list
-		int currentTileViewLocationScore;
-		int subsequentTileViewLocationScore;
+		short permutations = 0; // the number of incorrect orderings of tiles
+		short currentTileViewLocationScore;
+		short subsequentTileViewLocationScore;
+		System.out.println("Calling isSolvable");
 		
 		// Start at the first tile
 		for (int i = 0; i < tiles.size() - 2; i++) {
 			Tile tile = tiles.get(i);
-			
-			if (tile == theBlankTile) {
-				tileIndex++;
-				continue;
-			}
 
 			// Determine the tile's location value
 			currentTileViewLocationScore = computeLocationValue(
@@ -257,28 +261,9 @@ public final class GameBoard {
 			
 			// Compare the tile's location score to all of the tiles that
 			// follow it
-						
-		}
-
-		// Start at the first tile
-		for (Tile tile : tiles.subList(0, tiles.size() - 2)) {
-
-			if (tile == theBlankTile) {
-				tileIndex++;
-				continue;
-			}
-
-			// Determine the tile's location value
-			currentTileViewLocationScore = computeLocationValue(
-					tile.getCorrectLocation());
-			
-			// Compare the tile's location score to all of the tiles that
-			// follow it
-			for (Tile tSub : tiles.subList(tileIndex + 1, tiles.size() - 1)) {
-			
-				if (tSub == theBlankTile) {
-					continue;
-				}
+			for (int j = i + 1; j < tiles.size() - 1; j++)
+			{
+				Tile tSub = tiles.get(j);
 				
 				subsequentTileViewLocationScore = computeLocationValue(
 						tSub.getCorrectLocation());
@@ -290,13 +275,9 @@ public final class GameBoard {
 					permutations++;
 				}
 			}
-
-			tileIndex++;
 		}
-
-		// return whether permutations + blank row number is even
-		return (permutations + theBlankTile.getCurrentLocation().getRow() + 1)
-				% 2 == 0;
+		// return whether number of permutations is even
+		return permutations % 2 == 0;
 	}
 
 	/* (non-Javadoc)
@@ -372,8 +353,8 @@ public final class GameBoard {
 	 * range 0 to gridSize-1.  For instance, on a 4x4 grid the 2nd row 2nd
 	 * column should have the value 5.
 	 */
-	private int computeLocationValue(short row, short column) {
-		return gridSize * row + column;
+	private short computeLocationValue(short row, short column) {
+		return (short) (gridSize * row + column);
 	}
 	
 	/* (non-Javadoc)
@@ -381,7 +362,7 @@ public final class GameBoard {
 	 * range 0 to gridSize-1.  For instance, on a 4x4 grid the 2nd row 2nd
 	 * column should have the value 5.
 	 */
-	private int computeLocationValue(TileLocation location) {
+	private short computeLocationValue(TileLocation location) {
 		return computeLocationValue(location.getRow(), location.getColumn());
 	}
 	
