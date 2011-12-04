@@ -29,6 +29,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -116,6 +117,9 @@ public final class PuzzleActivity extends Activity {
 	 * @param gridSize row and column count (3 = 3x3; 4 = 4x4; 5 = 5x5; etc.)
 	 */
 	private final void createGameBoard(short gridSize) {
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        
 		TableLayout tableLayout;
 		tableLayout = (TableLayout) findViewById(R.id.parentLayout);    
 		tableLayout.removeAllViews();
@@ -123,8 +127,8 @@ public final class PuzzleActivity extends Activity {
 		board = GameBoard.createGameBoard(this, 
 				bitmap, 
 				tableLayout,
-				getWindowManager().getDefaultDisplay().getWidth(),
-				getWindowManager().getDefaultDisplay().getHeight(),
+				(int) (metrics.widthPixels * metrics.density),
+				(int) (metrics.heightPixels * metrics.density),
 				gridSize);
 		board.setNumbersVisible(numbersVisible);
 		bitmap = null; // free memory for this copy of the picture since the
