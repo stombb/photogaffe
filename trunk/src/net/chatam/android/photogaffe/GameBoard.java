@@ -249,7 +249,6 @@ public final class GameBoard {
 		short permutations = 0; // the number of incorrect orderings of tiles
 		short currentTileViewLocationScore;
 		short subsequentTileViewLocationScore;
-		System.out.println("Calling isSolvable");
 		
 		// Start at the first tile
 		for (int i = 0; i < tiles.size() - 2; i++) {
