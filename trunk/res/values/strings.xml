@@ -7,6 +7,5 @@
     <string name="hide_numbers">Hide Tile Numbers</string>
     <string name="picasa_error">Images from Picasa web albums are not supported for this version of Android.</string>
     <string name="grid_size_dialog_title">Select Grid Size</string>
-    <string name="settings_dialog_title">Settings</string>
     <string name="congratulations">Congratulations!</string>
 </resources>
