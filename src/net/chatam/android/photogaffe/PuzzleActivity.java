@@ -143,9 +143,6 @@ public final class PuzzleActivity extends Activity {
 	}
 
 	//TODO Replace this with ActionBar support for IceCream Sandwich (4.0)
-	// This cannot currently be handled because the ICS Gallery app is broken
-	// in the Google-supplied Android Virtual Device, which makes testing
-	// impossible.
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		boolean returnVal = true;
@@ -189,10 +186,9 @@ public final class PuzzleActivity extends Activity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		switch(id) {
 		case DIALOG_PICASA_ERROR_ID:
-			//TODO change buttons to read text from R.strings
 			builder.setMessage(R.string.picasa_error)
 			.setCancelable(false)
-			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
 					// After message is displayed, have the user pick again.
@@ -215,7 +211,7 @@ public final class PuzzleActivity extends Activity {
 		case DIALOG_COMPLETED_ID:
 			builder.setMessage(R.string.congratulations)
 			.setCancelable(false)
-			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
 					board.shuffleTiles();
