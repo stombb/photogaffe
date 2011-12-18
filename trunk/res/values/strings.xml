@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PhotoGaffe</string>
+    <string name="play">Play</string>
+    <string name="instructions">Instructions</string>
+    <string name="about">About</string>
+    <string name="ok">OK</string>
     <string name="new_picture">New Picture</string>
     <string name="reshuffle">Reshuffle</string>
     <string name="show_numbers">Show Tile Numbers</string>
@@ -8,4 +12,13 @@
     <string name="picasa_error">Images from Picasa web albums are not supported for this version of Android.</string>
     <string name="grid_size_dialog_title">Select Grid Size</string>
     <string name="congratulations">Congratulations!</string>
+    <string name="about_text">\
+This is free software released under the GPLv3.  Visit 
+http://code.google.com/p/photogaffe to download the source code.  Please use the
+ \'Issues\' page on the site for bugs and feature requests.  Enjoy!    
+    </string>
+    <string name="instructions_text">\
+Select an image from the Gallery.  Move the tiles around to recreate the 
+original picture.
+    </string>
 </resources>
