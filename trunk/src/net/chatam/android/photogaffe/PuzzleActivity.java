@@ -209,7 +209,10 @@ public final class PuzzleActivity extends Activity {
 			dialog = builder.create();
 			break;
 		case DIALOG_COMPLETED_ID:
-			builder.setMessage(R.string.congratulations)
+			String completeMsg = 
+				getResources().getString(R.string.congratulations) + " " 
+				+ String.valueOf(board.getMoveCount());
+			builder.setMessage(completeMsg)
 			.setCancelable(false)
 			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
@@ -223,5 +226,18 @@ public final class PuzzleActivity extends Activity {
 			dialog = null;
 		}
 		return dialog;
+	}
+	
+	//TODO When updating to ICS-level API, replace this with Fragment
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		switch (id) {
+		case DIALOG_COMPLETED_ID:
+			String completeMsg = 
+				getResources().getString(R.string.congratulations) + " "
+				+ String.valueOf(board.getMoveCount());
+			((AlertDialog) dialog).setMessage(completeMsg);
+			break;
+		}
 	}
 } 
