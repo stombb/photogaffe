@@ -19,6 +19,7 @@ package net.chatam.android.photogaffe;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,6 +27,8 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -57,7 +60,6 @@ public final class PuzzleActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.board);
-		//TODO load saved game state
 		selectImageFromGallery();
 	}    
 
@@ -84,9 +86,9 @@ public final class PuzzleActivity extends Activity {
 			switch (requestCode) {
 			case IMAGEREQUESTCODE:
 				Uri imageUri = i.getData();
+				
 				try {
-					bitmap = MediaStore.Images.Media.getBitmap(
-							  	getContentResolver(), imageUri);
+					bitmap = createScaledBitmap(imageUri);
 				} catch (FileNotFoundException e) {
 					// You see, what had happened was...
 					// When using the Gallery app for selecting an image, the 
@@ -102,14 +104,53 @@ public final class PuzzleActivity extends Activity {
 					// the Gallery.
 					showDialog(DIALOG_PICASA_ERROR_ID);
 				} catch (IOException e) {
-					// This should never happen
 					e.printStackTrace();
+					finish();
 				}
+				
 				showDialog(DIALOG_GRID_SIZE_ID); // choose puzzle size
 				break;
 			} // end switch
 		} // end if
 	}
+	
+	/* (non-Javadoc)
+	 * Returns a scaled image of the bitmap at the given location.  This helps
+	 * prevent OutOfMemory exceptions when loading large images from the SD
+	 * card.
+	 */
+	private Bitmap createScaledBitmap(Uri uri) 
+			throws FileNotFoundException, IOException {
+		InputStream is = getContentResolver().openInputStream(uri);
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		
+		BitmapFactory.Options boundingBox = new BitmapFactory.Options();
+		boundingBox.inJustDecodeBounds = true;
+		boundingBox.inDither = true;
+		BitmapFactory.decodeStream(is, null, boundingBox);
+		is.close();
+		
+		int screenSize = (int) (metrics.widthPixels * metrics.density *
+				metrics.heightPixels * metrics.density);
+		int imageSize = boundingBox.outWidth * boundingBox.outHeight;
+		
+		BitmapFactory.Options pictureOptions = new BitmapFactory.Options();
+
+		//TODO improve the mechanism for determining if an image should be
+		// sampled based on memory available and size of image.
+		if (imageSize > screenSize) {
+			pictureOptions.inSampleSize = 8;
+//				Integer.highestOneBit((int) Math.ceil(imageSize / screenSize));
+		}
+		
+		pictureOptions.inDither = true;
+		is = getContentResolver().openInputStream(uri);
+		Bitmap bitmap = BitmapFactory.decodeStream(is, null, pictureOptions);
+		is.close();
+		return bitmap;
+	}
+	
 
 	/* (non-Javadoc)
 	 * Basic wrapper method for creating the game board and setting the number
@@ -131,8 +172,8 @@ public final class PuzzleActivity extends Activity {
 				(int) (metrics.heightPixels * metrics.density),
 				gridSize);
 		board.setNumbersVisible(numbersVisible);
-		bitmap = null; // free memory for this copy of the picture since the
-					   // picture is stored by the GameBoard class
+		bitmap.recycle(); // free memory for this copy of the picture since the
+					      // picture is stored by the GameBoard class
 	}
 
 	@Override
