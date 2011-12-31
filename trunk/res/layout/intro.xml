@@ -24,10 +24,10 @@
 	        android:layout_height="wrap_content"
 	        android:text="@string/play" />
 	    <Button 
-	        android:id="@+id/instructions_button"
+	        android:id="@+id/settings_button"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:text="@string/instructions" />
+	        android:text="@string/settings" />
 	    <Button 
 	        android:id="@+id/about_button"
 	        android:layout_width="fill_parent"

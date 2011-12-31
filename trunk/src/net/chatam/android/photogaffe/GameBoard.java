@@ -381,4 +381,12 @@ public final class GameBoard {
 			tv.setNumbersVisible(visible);
 		}
 	}
+	
+	/**
+	 * Returns the number of rows and columns in this instance of the game board
+	 * @return number of rows and columns
+	 */
+	public short getGridSize() {
+		return gridSize;
+	}
 }
