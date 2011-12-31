@@ -28,7 +28,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -103,12 +102,14 @@ public final class PuzzleActivity extends Activity {
 					// They will then be prompted to select another picture from
 					// the Gallery.
 					showDialog(DIALOG_PICASA_ERROR_ID);
+				} catch (NullPointerException e) {
+					showDialog(DIALOG_PICASA_ERROR_ID);
 				} catch (IOException e) {
 					e.printStackTrace();
 					finish();
 				}
 				
-				showDialog(DIALOG_GRID_SIZE_ID); // choose puzzle size
+				createGameBoard(SettingsActivity.getGridSize(this));
 				break;
 			} // end switch
 		} // end if
@@ -172,7 +173,7 @@ public final class PuzzleActivity extends Activity {
 				(int) (metrics.heightPixels * metrics.density),
 				gridSize);
 		board.setNumbersVisible(numbersVisible);
-		bitmap.recycle(); // free memory for this copy of the picture since the
+//		bitmap.recycle(); // free memory for this copy of the picture since the
 					      // picture is stored by the GameBoard class
 	}
 
@@ -195,13 +196,9 @@ public final class PuzzleActivity extends Activity {
 		case R.id.reshuffle:
 			board.shuffleTiles();
 			break;
-		case R.id.show_numbers:
-			if (numbersVisible) {
-				item.setTitle(R.string.show_numbers);
-			} else {
-				item.setTitle(R.string.hide_numbers);
-			}
-			toggleNumbersVisible();
+		case R.id.settings:
+			Intent i = new Intent(this, SettingsActivity.class);
+			startActivity(i);
 			break;
 		default:
 			returnVal = super.onOptionsItemSelected(item);
@@ -209,16 +206,23 @@ public final class PuzzleActivity extends Activity {
 
 		return returnVal;
 	}
-
-	/* (non-Javadoc)
-	 * Internal method for changing the visibility of the title numbers.  These
-	 * numbers are the tile's correct location and consist of the row, a dash,
-	 * and the column. ie. "1-2" for the tile that should be located in row 1
-	 * and column 2.
-	 */
-	private void toggleNumbersVisible() {
-		numbersVisible = !numbersVisible;
-		board.setNumbersVisible(numbersVisible);
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		numbersVisible = SettingsActivity.isNumbersVisible(this);
+		
+		if (board == null) {
+			return;
+		}		
+		
+		board.setNumbersVisible(numbersVisible);		
+		// Check if the size of the board has changed, since this puzzle was
+		// started.  If so, create a new board.
+		if (board.getGridSize() != SettingsActivity.getGridSize(this)) {
+			short gridSize = SettingsActivity.getGridSize(this);
+			createGameBoard(gridSize);
+		}
 	}
 
 	@Override
@@ -234,17 +238,6 @@ public final class PuzzleActivity extends Activity {
 					dialog.dismiss();
 					// After message is displayed, have the user pick again.
 					selectImageFromGallery();
-				}
-			});
-			dialog = builder.create();
-			break;
-		case DIALOG_GRID_SIZE_ID:
-			builder.setTitle(R.string.grid_size_dialog_title);
-			final CharSequence[] gridSizeItems = {"3x3", "4x4", "5x5", "6x6"};
-			builder.setItems(gridSizeItems, 
-							 new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int item) {
-					createGameBoard((short) (item + 3));
 				}
 			});
 			dialog = builder.create();

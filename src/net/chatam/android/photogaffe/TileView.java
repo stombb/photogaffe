@@ -42,7 +42,7 @@ public final class TileView extends TextView {
 	private Tile currentTile; // tile to be displayed
 	private TileLocation myLocation; // permanent location on game board
 	private String title; // the current tile's correct location (changes)
-	private boolean numbersVisible = true; // should title be displayed
+	private boolean numbersVisible = false; // should title be displayed
 	
 	/**
 	 * Constructor for creating a TileView at the specified location on the game
