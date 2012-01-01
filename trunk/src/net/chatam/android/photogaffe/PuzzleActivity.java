@@ -102,11 +102,11 @@ public final class PuzzleActivity extends Activity {
 					// They will then be prompted to select another picture from
 					// the Gallery.
 					showDialog(DIALOG_PICASA_ERROR_ID);
-				} catch (NullPointerException e) {
-					showDialog(DIALOG_PICASA_ERROR_ID);
 				} catch (IOException e) {
 					e.printStackTrace();
 					finish();
+				} catch (IllegalArgumentException e) {
+					showDialog(DIALOG_PICASA_ERROR_ID);
 				}
 				
 				createGameBoard(SettingsActivity.getGridSize(this));
@@ -121,7 +121,8 @@ public final class PuzzleActivity extends Activity {
 	 * card.
 	 */
 	private Bitmap createScaledBitmap(Uri uri) 
-			throws FileNotFoundException, IOException {
+			throws FileNotFoundException, IOException, 
+				   IllegalArgumentException {
 		InputStream is = getContentResolver().openInputStream(uri);
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -243,10 +244,7 @@ public final class PuzzleActivity extends Activity {
 			dialog = builder.create();
 			break;
 		case DIALOG_COMPLETED_ID:
-			String completeMsg = 
-				getResources().getString(R.string.congratulations) + " " 
-				+ String.valueOf(board.getMoveCount());
-			builder.setMessage(completeMsg)
+			builder.setMessage(createCompletionMessage())
 			.setCancelable(false)
 			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
@@ -267,11 +265,23 @@ public final class PuzzleActivity extends Activity {
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		switch (id) {
 		case DIALOG_COMPLETED_ID:
-			String completeMsg = 
-				getResources().getString(R.string.congratulations) + " "
-				+ String.valueOf(board.getMoveCount());
-			((AlertDialog) dialog).setMessage(completeMsg);
+			((AlertDialog) dialog).setMessage(createCompletionMessage());
 			break;
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * Return a 'congratulatory' message that also contains the number of moves.
+	 */
+	private String createCompletionMessage() {
+		String completeMsg = 
+				getResources().getString(R.string.congratulations) + " " 
+				+ String.valueOf(board.getMoveCount());
+		String[] insults = getResources().getStringArray(R.array.insults);
+		completeMsg += "\n";
+		int insultIndex = (int) Math.floor(Math.random() * insults.length); 
+		completeMsg += insults[insultIndex];
+		
+		return completeMsg;
 	}
 } 
