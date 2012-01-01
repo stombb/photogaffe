@@ -31,7 +31,7 @@ public final class Tile {
 	
 	private TileLocation currentLocation; // current spot on game board
 	private final TileLocation correctLocation; // where it's trying to go
-	private Bitmap bitmap; // the partial picture that when combined with
+	private final Bitmap bitmap; // the partial picture that when combined with
 								 // the other Tiles will create the original
 	                             // picture
 	
@@ -95,15 +95,5 @@ public final class Tile {
 	 */
 	public Bitmap getBitmap() {
 		return bitmap;
-	}
-	
-	/**
-	 * Clear the memory used by the bitmap.  This should only be called when
-	 * the tile is no longer needed as future calls to getBitmap will return
-	 * null.
-	 */
-	public void freeBitmap() {
-		bitmap.recycle();
-		bitmap = null;
 	}
 }

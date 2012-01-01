@@ -35,14 +35,15 @@ import android.view.View.OnClickListener;
  */
 public final class IntroActivity extends Activity implements OnClickListener{
 
-	public static final int DIALOG_ABOUT_ID = 0;	
+	public static final int DIALOG_INSTRUCTIONS_ID = 0;
+	public static final int DIALOG_ABOUT_ID = 1;	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.intro);
 		findViewById(R.id.play_button).setOnClickListener(this);
-		findViewById(R.id.settings_button).setOnClickListener(this);
+		findViewById(R.id.instructions_button).setOnClickListener(this);
 		findViewById(R.id.about_button).setOnClickListener(this);
 	}
 
@@ -53,9 +54,8 @@ public final class IntroActivity extends Activity implements OnClickListener{
 			Intent i = new Intent(this, PuzzleActivity.class);
 			startActivity(i);
 			break;
-		case R.id.settings_button:
-			Intent i2 = new Intent(this, SettingsActivity.class);
-			startActivity(i2);
+		case R.id.instructions_button:
+			showDialog(DIALOG_INSTRUCTIONS_ID);
 			break;
 		case R.id.about_button:
 			showDialog(DIALOG_ABOUT_ID);
@@ -68,6 +68,16 @@ public final class IntroActivity extends Activity implements OnClickListener{
 		Dialog dialog;
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		switch(id) {
+		case DIALOG_INSTRUCTIONS_ID:
+			builder.setMessage(R.string.instructions_text)
+			.setCancelable(false)
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			dialog = builder.create();
+			break;
 		case DIALOG_ABOUT_ID:
 			builder.setMessage(R.string.about_text)
 			.setCancelable(false)

@@ -71,7 +71,7 @@ public final class GameBoard {
 		this.bitmap = Bitmap.createScaledBitmap(bitmap, 
 				this.boardWidth, 
 				this.boardHeight, 
-				true);
+				false);
 		this.moveCount = 0;		
 		this.parentLayout = parentLayout;
 		this.gridSize = gridSize;
@@ -120,20 +120,15 @@ public final class GameBoard {
 	 * Creates new objects for tiles, tile views, and table rows.
 	 */
 	private void initializeLists() {
-		if (tiles == null) {
+		if (tiles == null && tileViews == null && tableRow == null) {
+			
 			tiles = new ArrayList<Tile> (gridSize * gridSize);
-		} else {
-			// Be sure to clean up old tiles
-			for (int i = 0; i < tiles.size(); i++) {
-				tiles.get(i).freeBitmap();
-				tiles = new ArrayList<Tile> (gridSize * gridSize);
-			}
-		}
-		tileViews = new ArrayList<TileView> (gridSize * gridSize);
-		tableRow = new ArrayList<TableRow> (gridSize);
+			tileViews = new ArrayList<TileView> (gridSize * gridSize);
+			tableRow = new ArrayList<TableRow> (gridSize);
 
-		for (int row = 0; row < gridSize; row++) {
-			tableRow.add(new TableRow(context));				
+			for (int row = 0; row < gridSize; row++) {
+				tableRow.add(new TableRow(context));				
+			}
 		}
 	}
 
@@ -164,8 +159,7 @@ public final class GameBoard {
 					tiles.add(new Tile(bm, row, column));
 				}				
 			} // end column			
-		} // end row
-		bitmap.recycle();
+		} // end row		
 	}	
 
 	/* (non-Javadoc)
@@ -380,13 +374,5 @@ public final class GameBoard {
 		for (TileView tv : tileViews) {
 			tv.setNumbersVisible(visible);
 		}
-	}
-	
-	/**
-	 * Returns the number of rows and columns in this instance of the game board
-	 * @return number of rows and columns
-	 */
-	public short getGridSize() {
-		return gridSize;
 	}
 }

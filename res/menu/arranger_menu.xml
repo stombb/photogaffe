@@ -4,6 +4,6 @@
           android:title="@string/new_picture" />
     <item android:id="@+id/reshuffle"
           android:title="@string/reshuffle" />
-    <item android:id="@+id/settings"
-          android:title="@string/settings" />
+    <item android:id="@+id/show_numbers"
+          android:title="@string/show_numbers" />
 </menu>

@@ -19,7 +19,6 @@ package net.chatam.android.photogaffe;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,7 +26,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -59,6 +57,7 @@ public final class PuzzleActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.board);
+		//TODO load saved game state
 		selectImageFromGallery();
 	}    
 
@@ -85,9 +84,9 @@ public final class PuzzleActivity extends Activity {
 			switch (requestCode) {
 			case IMAGEREQUESTCODE:
 				Uri imageUri = i.getData();
-				
 				try {
-					bitmap = createScaledBitmap(imageUri);
+					bitmap = MediaStore.Images.Media.getBitmap(
+							  	getContentResolver(), imageUri);
 				} catch (FileNotFoundException e) {
 					// You see, what had happened was...
 					// When using the Gallery app for selecting an image, the 
@@ -102,56 +101,15 @@ public final class PuzzleActivity extends Activity {
 					// They will then be prompted to select another picture from
 					// the Gallery.
 					showDialog(DIALOG_PICASA_ERROR_ID);
-				} catch (NullPointerException e) {
-					showDialog(DIALOG_PICASA_ERROR_ID);
 				} catch (IOException e) {
+					// This should never happen
 					e.printStackTrace();
-					finish();
 				}
-				
-				createGameBoard(SettingsActivity.getGridSize(this));
+				showDialog(DIALOG_GRID_SIZE_ID); // choose puzzle size
 				break;
 			} // end switch
 		} // end if
 	}
-	
-	/* (non-Javadoc)
-	 * Returns a scaled image of the bitmap at the given location.  This helps
-	 * prevent OutOfMemory exceptions when loading large images from the SD
-	 * card.
-	 */
-	private Bitmap createScaledBitmap(Uri uri) 
-			throws FileNotFoundException, IOException {
-		InputStream is = getContentResolver().openInputStream(uri);
-		DisplayMetrics metrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		
-		BitmapFactory.Options boundingBox = new BitmapFactory.Options();
-		boundingBox.inJustDecodeBounds = true;
-		boundingBox.inDither = true;
-		BitmapFactory.decodeStream(is, null, boundingBox);
-		is.close();
-		
-		int screenSize = (int) (metrics.widthPixels * metrics.density *
-				metrics.heightPixels * metrics.density);
-		int imageSize = boundingBox.outWidth * boundingBox.outHeight;
-		
-		BitmapFactory.Options pictureOptions = new BitmapFactory.Options();
-
-		//TODO improve the mechanism for determining if an image should be
-		// sampled based on memory available and size of image.
-		if (imageSize > screenSize) {
-			pictureOptions.inSampleSize = 8;
-//				Integer.highestOneBit((int) Math.ceil(imageSize / screenSize));
-		}
-		
-		pictureOptions.inDither = true;
-		is = getContentResolver().openInputStream(uri);
-		Bitmap bitmap = BitmapFactory.decodeStream(is, null, pictureOptions);
-		is.close();
-		return bitmap;
-	}
-	
 
 	/* (non-Javadoc)
 	 * Basic wrapper method for creating the game board and setting the number
@@ -173,8 +131,8 @@ public final class PuzzleActivity extends Activity {
 				(int) (metrics.heightPixels * metrics.density),
 				gridSize);
 		board.setNumbersVisible(numbersVisible);
-//		bitmap.recycle(); // free memory for this copy of the picture since the
-					      // picture is stored by the GameBoard class
+		bitmap = null; // free memory for this copy of the picture since the
+					   // picture is stored by the GameBoard class
 	}
 
 	@Override
@@ -196,9 +154,13 @@ public final class PuzzleActivity extends Activity {
 		case R.id.reshuffle:
 			board.shuffleTiles();
 			break;
-		case R.id.settings:
-			Intent i = new Intent(this, SettingsActivity.class);
-			startActivity(i);
+		case R.id.show_numbers:
+			if (numbersVisible) {
+				item.setTitle(R.string.show_numbers);
+			} else {
+				item.setTitle(R.string.hide_numbers);
+			}
+			toggleNumbersVisible();
 			break;
 		default:
 			returnVal = super.onOptionsItemSelected(item);
@@ -206,23 +168,16 @@ public final class PuzzleActivity extends Activity {
 
 		return returnVal;
 	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		numbersVisible = SettingsActivity.isNumbersVisible(this);
-		
-		if (board == null) {
-			return;
-		}		
-		
-		board.setNumbersVisible(numbersVisible);		
-		// Check if the size of the board has changed, since this puzzle was
-		// started.  If so, create a new board.
-		if (board.getGridSize() != SettingsActivity.getGridSize(this)) {
-			short gridSize = SettingsActivity.getGridSize(this);
-			createGameBoard(gridSize);
-		}
+
+	/* (non-Javadoc)
+	 * Internal method for changing the visibility of the title numbers.  These
+	 * numbers are the tile's correct location and consist of the row, a dash,
+	 * and the column. ie. "1-2" for the tile that should be located in row 1
+	 * and column 2.
+	 */
+	private void toggleNumbersVisible() {
+		numbersVisible = !numbersVisible;
+		board.setNumbersVisible(numbersVisible);
 	}
 
 	@Override
@@ -242,11 +197,19 @@ public final class PuzzleActivity extends Activity {
 			});
 			dialog = builder.create();
 			break;
+		case DIALOG_GRID_SIZE_ID:
+			builder.setTitle(R.string.grid_size_dialog_title);
+			final CharSequence[] gridSizeItems = {"3x3", "4x4", "5x5", "6x6"};
+			builder.setItems(gridSizeItems, 
+							 new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int item) {
+					createGameBoard((short) (item + 3));
+				}
+			});
+			dialog = builder.create();
+			break;
 		case DIALOG_COMPLETED_ID:
-			String completeMsg = 
-				getResources().getString(R.string.congratulations) + " " 
-				+ String.valueOf(board.getMoveCount());
-			builder.setMessage(completeMsg)
+			builder.setMessage(R.string.congratulations)
 			.setCancelable(false)
 			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
@@ -260,18 +223,5 @@ public final class PuzzleActivity extends Activity {
 			dialog = null;
 		}
 		return dialog;
-	}
-	
-	//TODO When updating to ICS-level API, replace this with Fragment
-	@Override
-	protected void onPrepareDialog(int id, Dialog dialog) {
-		switch (id) {
-		case DIALOG_COMPLETED_ID:
-			String completeMsg = 
-				getResources().getString(R.string.congratulations) + " "
-				+ String.valueOf(board.getMoveCount());
-			((AlertDialog) dialog).setMessage(completeMsg);
-			break;
-		}
 	}
 } 
