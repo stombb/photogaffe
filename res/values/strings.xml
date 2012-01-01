@@ -13,7 +13,7 @@
     <string name="picasa_error">Images from Picasa web albums are not supported for this version of Android.</string>
     <string name="grid_size_title">Grid Size</string>
     <string name="grid_size_summary">The number of rows and columns</string>
-    <string name="congratulations">Congratulations! Number of moves to complete:</string>
+    <string name="congratulations">Moves:</string>
     <string name="about_text">\
 This is free software released under the GPLv3.  Visit 
 http://code.google.com/p/photogaffe to download the source code.  Please use the
