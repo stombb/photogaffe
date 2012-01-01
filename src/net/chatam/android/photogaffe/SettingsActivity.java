@@ -30,32 +30,32 @@ import android.preference.PreferenceManager;
  */
 public class SettingsActivity extends PreferenceActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		addPreferencesFromResource(R.xml.settings);
-	}
-	
-	/**
-	 * Determine the number visibility based on the application's settings in
-	 * persistent storage.
-	 * @param context
-	 * @return true if the titles are visible, false otherwise
-	 */
-	public static boolean isNumbersVisible(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getBoolean("show_numbers", false);
-	}
-	
-	/**
-	 * Determine the number of rows and columns based on the application's
-	 * settings in persistent storage.
-	 * @param context
-	 * @return value that represents the number of rows in the puzzle
-	 */
-	public static short getGridSize(Context context) {
-		String gridSize = PreferenceManager.getDefaultSharedPreferences(context)
-				.getString("grid_size", "3");	
-		return Short.parseShort(gridSize);
-	}
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.settings);
+   }
+   
+   /**
+    * Determine the number visibility based on the application's settings in
+    * persistent storage.
+    * @param context
+    * @return true if the titles are visible, false otherwise
+    */
+   public static boolean isNumbersVisible(Context context) {
+      return PreferenceManager.getDefaultSharedPreferences(context)
+            .getBoolean("show_numbers", false);
+   }
+   
+   /**
+    * Determine the number of rows and columns based on the application's
+    * settings in persistent storage.
+    * @param context
+    * @return value that represents the number of rows in the puzzle
+    */
+   public static short getGridSize(Context context) {
+      String gridSize = PreferenceManager.getDefaultSharedPreferences(context)
+            .getString("grid_size", "3");   
+      return Short.parseShort(gridSize);
+   }
 }
