@@ -46,7 +46,6 @@ public final class IntroActivity extends Activity implements OnClickListener{
       findViewById(R.id.about_button).setOnClickListener(this);
    }
 
-   @Override
    public void onClick(View v) {
       switch(v.getId()) {
       case R.id.play_button:
