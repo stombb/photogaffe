@@ -29,23 +29,22 @@ public final class TileLocation {
    private short row;
    private short column;
    
-   public TileLocation(short row, short column) {
+   private TileLocation(short row, short column) {
       this.row = row;
       this.column = column;
+   }
+   
+   public static TileLocation getInstance(short row, short column) {
+	   return new TileLocation(row, column);
    }
    
    public short getRow() {
       return row;
    }
-   public void setRow(short row) {
-      this.row = row;
-   }
    public short getColumn() {
       return column;
    }
-   public void setColumn(short column) {
-      this.column = column;
-   }
+   
    
    /**
     * Do these tiles have the same row and column numbers?
