@@ -53,7 +53,7 @@ public final class TileView extends TextView {
     */
    public TileView(Context context, short row, short column) {
       super(context);
-      this.myLocation = new TileLocation(row, column);
+      this.myLocation = TileLocation.getInstance(row, column);
       super.setCursorVisible(false);
       super.setTypeface(Typeface.DEFAULT_BOLD);
       super.setTextColor(Color.RED); 

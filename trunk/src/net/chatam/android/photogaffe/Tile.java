@@ -42,8 +42,8 @@ public final class Tile {
     */
    public Tile(Bitmap bitmap, short correctRow, short correctColumn) {
       this.bitmap = bitmap;
-      currentLocation = new TileLocation(correctRow, correctColumn);
-      correctLocation = new TileLocation(correctRow, correctColumn);
+      currentLocation = TileLocation.getInstance(correctRow, correctColumn);
+      correctLocation = TileLocation.getInstance(correctRow, correctColumn);
    }
    
    /**
@@ -77,16 +77,6 @@ public final class Tile {
     */
    public void setCurrentLocation(TileLocation location) {
       this.currentLocation = location;
-   }
-   
-   /**
-    * The tile has been moved, and its location should be updated.
-    * @param row the row number (0-based index) of the current location
-    * @param column the column number (0-based index) of the current location
-    */
-   public void setCurrentLocation(short row, short column) {
-      this.currentLocation.setRow(row);
-      this.currentLocation.setColumn(column);
    }
    
    /**
