@@ -1,0 +1,3 @@
+The 15-puzzle is also known as a slider puzzle.  It allows the user to select an image from the Gallery and breaks it into tiles that must be arranged to recreate the original picture.  This app allows the user to choose between 3x3, 4x4, 5x5, and 6x6 puzzles.
+
+![https://lh4.googleusercontent.com/-hmvw1B0tuAk/TukidfybG6I/AAAAAAAAAOY/71vB1cvvdm8/s720/Screen%2Bshot%2B2011-12-14%2Bat%2B4.20.47%2BPM.png](https://lh4.googleusercontent.com/-hmvw1B0tuAk/TukidfybG6I/AAAAAAAAAOY/71vB1cvvdm8/s720/Screen%2Bshot%2B2011-12-14%2Bat%2B4.20.47%2BPM.png)
